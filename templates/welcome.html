@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.8);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcome-container {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-register.active {
+            background: linear-gradient(90deg, var(--secondary), #059669);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-register {
+            background: linear-gradient(90deg, var(--secondary), #059669);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .switch-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h1 style="margin: 0 0 0.5rem 0; color: var(--primary);">🎮 Game Tracker </h1>
+            <p style="color: var(--text-muted); margin: 0;">Відстежуй свої ігри та досягнення</p>
+        </div>
+
+        <!-- Кнопки перемикання -->
+        <div class="tabs">
+            <a href="/?form=login" class="tab {% if not show_register %}active{% endif %}">
+                Вхід
+            </a>
+            <a href="/?form=register" class="tab tab-register {% if show_register %}active{% endif %}">
+                Реєстрація
+            </a>
+        </div>
+
+        {% if error %}
+        <div class="error">
+            <strong>⚠️ Помилка:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Форма входу -->
+        {% if not show_register %}
+        <form action="/auth/login" method="post">
+            <div class="form-group">
+                <label>Електронна пошта</label>
+                <input type="email" name="email" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit">🔑 Увійти</button>
+        </form>
+
+        <div class="switch-link">
+            Ще не маєте акаунту? <a href="/?form=register">Зареєструватися</a>
+        </div>
+        {% endif %}
+
+        <!-- Форма реєстрації -->
+        {% if show_register %}
+        <form action="/auth/register" method="post" id="registerForm">
+            <div class="form-group">
+                <label>Нікнейм</label>
+                <input type="text" name="username" placeholder="Введіть нікнейм"
+                       required minlength="3" maxlength="20" oninput="validateUsername(this)">
+                <small style="color: var(--text-muted); font-size: 0.875rem;">Мінімум 3 символи</small>
+            </div>
+
+            <div class="form-group">
+                <label>Електронна пошта</label>
+                <input type="email" name="email" placeholder="email@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="Мінімум 6 символів"
+                       required minlength="6" oninput="validatePassword(this)">
+            </div>
+
+            <div class="form-group">
+                <label>Підтвердження паролю</label>
+                <input type="password" name="confirm_password" placeholder="Повторіть пароль"
+                       required oninput="checkPasswordMatch()">
+                <small id="password-match" style="font-size: 0.875rem;"></small>
+            </div>
+
+            <button type="submit" class="btn-register">✨ Створити акаунт</button>
+        </form>
+
+        <div class="switch-link">
+            Вже маєте акаунт? <a href="/?form=login">Увійти</a>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.875rem; margin: 0;">
+                Після реєстрації ви автоматично увійдете та зможете додавати ігри!
+            </p>
+        </div>
+    </div>
+
+    <script>
+    function validateUsername(input) {
+        const username = input.value;
+        if (username.length < 3 && username.length > 0) {
+            input.style.borderColor = 'var(--danger)';
+        } else {
+            input.style.borderColor = '';
+        }
+    }
+
+    function validatePassword(input) {
+        const password = input.value;
+        if (password.length < 6 && password.length > 0) {
+            input.style.borderColor = 'var(--danger)';
+        } else {
+            input.style.borderColor = '';
+        }
+    }
+
+    function checkPasswordMatch() {
+        const password = document.querySelector('input[name="password"]');
+        const confirmPassword = document.querySelector('input[name="confirm_password"]');
+        const matchText = document.getElementById('password-match');
+
+        if (!password || !confirmPassword) return;
+
+        if (confirmPassword.value.length === 0) {
+            matchText.textContent = '';
+        } else if (password.value !== confirmPassword.value) {
+            matchText.textContent = '✗ Паролі не співпадають';
+            matchText.style.color = 'var(--danger)';
+        } else {
+            matchText.textContent = '✓ Паролі співпадають';
+            matchText.style.color = 'var(--secondary)';
+        }
+    }
+    </script>
+</body>
+</html>

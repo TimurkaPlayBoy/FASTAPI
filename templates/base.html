@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Game Tracker Pro{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background">
+        <div class="gradient-circle circle-1"></div>
+        <div class="gradient-circle circle-2"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-gamepad"></i> GAME TRACKER
+        </a>
+        <div class="nav-links">
+            {% if user %}
+                <a href="/"><i class="fas fa-home"></i> Головна</a>
+                <a href="/dashboard"><i class="fas fa-chart-bar"></i> Статистика</a>
+                <span style="color: var(--primary)">
+                    <i class="fas fa-user"></i> {{ user.username }}
+                </span>
+                <a href="/logout" class="btn-primary">
+                    <i class="fas fa-sign-out-alt"></i> Вихід
+                </a>
+            {% else %}
+                <a href="/" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Увійти
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if error %}
+        <div class="alert alert-error">
+            {{ error }}
+            <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Помилка | Game Tracker Pro</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .error-card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">⚠️</div>
+            <h1>Сталася помилка</h1>
+            <p style="color: var(--text-muted); margin: 1rem 0 2rem 0;">
+                {% if error %}
+                    {{ error }}
+                {% else %}
+                    Щось пішло не так. Будь ласка, спробуйте ще раз.
+                {% endif %}
+            </p>
+
+            <div class="error-actions">
+                <a href="/" class="btn-primary">
+                    <i class="fas fa-home"></i> На головну
+                </a>
+                <a href="javascript:history.back()" class="btn-primary" style="background: var(--text-muted);">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

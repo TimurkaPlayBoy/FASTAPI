@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-card">
+    <h2>З поверненням! 👋</h2>
+    <form action="/auth/login" method="post">
+        <label>Електронна пошта</label>
+        <input type="email" name="email" required>
+
+        <label>Пароль</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Увійти в систему</button>
+    </form>
+</div>
+{% endblock %}

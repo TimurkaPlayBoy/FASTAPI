@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Моя бібліотека ігор{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="welcome-container">
+        <div class="hero-section">
+            <h1>🎮 Вітаємо, {{ user.username }}!</h1>
+            <p class="text-muted">Тут зберігаються всі ігри, які ви додали до своєї колекції</p>
+        </div>
+
+        <!-- Форма для додавання нової гри -->
+        <div class="auth-card" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-plus-circle"></i> Додати нову гру до бібліотеки</h3>
+            <form action="/games/add" method="post" class="game-form">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Назва гри *</label>
+                        <input type="text" name="title" placeholder="Наприклад: The Witcher 3: Wild Hunt" required>
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label>Жанр</label>
+                        <input type="text" name="genre" placeholder="RPG, Action, Strategy">
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label>Рік випуску</label>
+                        <input type="number" name="year" placeholder="2023" min="1950" max="2030">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Статус</label>
+                        <select name="status">
+                            <option value="В планах">📋 В планах</option>
+                            <option value="Граю">🎮 Зараз граю</option>
+                            <option value="Завершено">✅ Завершено</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="flex: 1;">
+                        <label>Ваш рейтинг (0-10)</label>
+                        <input type="number" name="rating" placeholder="0" min="0" max="10">
+                    </div>
+
+                    <div class="form-group" style="flex: 1; align-self: flex-end;">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Додати гру
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card">
+                <div class="stat-value">{{ games|length }}</div>
+                <div class="stat-label">Всього ігор</div>
+            </div>
+
+            {% set completed_games = games|selectattr('status', 'equalto', 'Завершено')|list %}
+            <div class="stat-card">
+                <div class="stat-value">{{ completed_games|length }}</div>
+                <div class="stat-label">Завершено</div>
+            </div>
+
+            {% set playing_games = games|selectattr('status', 'equalto', 'Граю')|list %}
+            <div class="stat-card">
+                <div class="stat-value">{{ playing_games|length }}</div>
+                <div class="stat-label">Зараз граю</div>
+            </div>
+
+            {% set planned_games = games|selectattr('status', 'equalto', 'В планах')|list %}
+            <div class="stat-card">
+                <div class="stat-value">{{ planned_games|length }}</div>
+                <div class="stat-label">В планах</div>
+            </div>
+        </div>
+
+        <!-- Список ігор -->
+        {% if games %}
+        <div class="games-section">
+            <h2><i class="fas fa-book"></i> Ваша бібліотека ігор</h2>
+
+            <div class="game-grid">
+                {% for game in games %}
+                <div class="game-card">
+                    <div class="game-header">
+                        <h3 class="game-title">{{ game.title }}</h3>
+                        <button class="delete-btn" onclick="deleteGame({{ game.id }})" title="Видалити">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="game-meta">
+                        {% if game.genre %}
+                        <span><i class="fas fa-tag"></i> {{ game.genre }}</span>
+                        {% endif %}
+
+                        {% if game.year %}
+                        <span><i class="fas fa-calendar"></i> {{ game.year }}</span>
+                        {% endif %}
+
+                        {% if game.rating and game.rating > 0 %}
+                        <span class="rating">
+                            <i class="fas fa-star" style="color: #fbbf24;"></i> {{ game.rating }}/10
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="game-status">
+                        <span class="status-badge status-{{ game.status|lower|replace(' ', '') }}">
+                            {% if game.status == 'В планах' %}
+                            📋 {{ game.status }}
+                            {% elif game.status == 'Граю' %}
+                            🎮 {{ game.status }}
+                            {% else %}
+                            ✅ {{ game.status }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="game-footer">
+                        <small><i class="fas fa-clock"></i> Додано {{ game.created_at.strftime('%d.%m.%Y') }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="auth-card" style="text-align: center; padding: 3rem;">
+            <i class="fas fa-gamepad" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+            <h3>Ваша бібліотека порожня</h3>
+            <p class="text-muted">Додайте свою першу гру, щоб почати колекцію!</p>
+        </div>
+        {% endif %}
+
+        <!-- Посилання на статистику -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/dashboard" class="btn-primary">
+                <i class="fas fa-chart-bar"></i> Детальна статистика
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteGame(gameId) {
+    if (confirm('Ви впевнені, що хочете видалити цю гру з бібліотеки?')) {
+        window.location.href = `/games/delete/${gameId}`;
+    }
+}
+
+// Автоматичне сортування
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.game-card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+
+<style>
+.game-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+.games-section {
+    margin-top: 2rem;
+}
+
+.rating {
+    color: #fbbf24;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

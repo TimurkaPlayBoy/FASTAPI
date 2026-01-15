@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-card">
+    <h2 style="margin-top:0">Приєднуйся до нас 🚀</h2>
+    <p style="color: #888; margin-bottom: 30px;">Створи свій ігровий профіль за хвилину</p>
+
+    <form action="/auth/register" method="post">
+        <label>Твій нікнейм</label>
+        <input type="text" name="username" placeholder="MasterChief_117" required>
+
+        <label>Електронна пошта</label>
+        <input type="email" name="email" placeholder="email@example.com" required>
+
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="••••••••" required>
+
+        <button type="submit">Створити аккаунт</button>
+    </form>
+    <p style="text-align:center; margin-top: 20px;">Вже є аккаунт? <a href="/login" style="color:var(--accent)">Увійти</a></p>
+</div>
+{% endblock %}
